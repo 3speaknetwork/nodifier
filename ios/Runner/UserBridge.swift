@@ -85,14 +85,14 @@ class UserBridge {
 						} else {
 							// return json here.
 							let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, token: fcmToken)
-							let string = try! JSONEncoder().encode(response)
+							let string = self.dataToString(try! JSONEncoder().encode(response))
 							result(string)
 						}
 					}
 				} else {
 					// no need to update FCM token, so return success response
 					let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, token: token)
-					let string = try! JSONEncoder().encode(response)
+					let string = self.dataToString(try! JSONEncoder().encode(response))
 					result(string)
 				}
 			}
@@ -124,11 +124,15 @@ class UserBridge {
 						result(flutterError)
 					} else {
 						let response = FireStoreUserJsonResponse(spkcc: [], dlux: [], token: fcmToken!)
-						let string = try! JSONEncoder().encode(response)
+						let string = self.dataToString(try! JSONEncoder().encode(response))
 						result(string)
 					}
 				}
 			}
 		}
+	}
+
+	func dataToString(_ data: Data) -> String {
+		String(data: data, encoding: .utf8)!
 	}
 }

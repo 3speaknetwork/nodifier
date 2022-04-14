@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint("fcmResult is $fcmResult");
       var authResult = await authPlatform.invokeMethod('login');
       debugPrint("authResult is $authResult");
-      var userResult = await authPlatform.invokeMethod('data');
+      var userResult = await userPlatform.invokeMethod('data');
       debugPrint("userResult is $userResult");
     } catch (e) {
       debugPrint('Error: ${e.toString()}');
