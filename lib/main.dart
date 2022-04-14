@@ -32,12 +32,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final platform = const MethodChannel('com.sagar.nodifier/fcm');
+  final fcmPlatform = const MethodChannel('com.sagar.nodifier/fcm');
+  final authPlatform = const MethodChannel('com.sagar.nodifier/auth');
+  final userPlatform = const MethodChannel('com.sagar.nodifier/user');
 
   void getFCMToken() async {
     try {
-      var registerResult = await platform.invokeMethod('register');
-      debugPrint("Result is $registerResult");
+      var fcmResult = await fcmPlatform.invokeMethod('register');
+      debugPrint("fcmResult is $fcmResult");
+      var authResult = await authPlatform.invokeMethod('login');
+      debugPrint("authResult is $authResult");
+      var userResult = await authPlatform.invokeMethod('data');
+      debugPrint("userResult is $userResult");
     } catch (e) {
       debugPrint('Error: ${e.toString()}');
       Fluttertoast.showToast(

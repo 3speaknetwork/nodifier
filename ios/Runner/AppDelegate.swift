@@ -14,6 +14,8 @@ import FirebaseMessaging
 		FirebaseApp.configure()
 		Messaging.messaging().delegate = self
 		FCMBridge.shared.setup(with: controller)
+		AuthBridge.shared.setup(with: controller)
+		UserBridge.shared.setup(with: controller)
 		return super.application(application, didFinishLaunchingWithOptions: launchOptions)
 	}
 

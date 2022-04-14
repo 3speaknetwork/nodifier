@@ -16,6 +16,8 @@
 		1B62715A2807AF4B00A1BADF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1B6271592807AF4B00A1BADF /* FirebaseFirestore */; };
 		1B62715C2807AF4B00A1BADF /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 1B62715B2807AF4B00A1BADF /* FirebaseMessaging */; };
 		1B62715E2807AF4B00A1BADF /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 1B62715D2807AF4B00A1BADF /* FirebaseRemoteConfig */; };
+		1B6271602807B79F00A1BADF /* AuthBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B62715F2807B79F00A1BADF /* AuthBridge.swift */; };
+		1B6271622807B9F400A1BADF /* UserBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B6271612807B9F400A1BADF /* UserBridge.swift */; };
 		1C6DAD3517A8B2A1AE4E9C57 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FC388AB79132D7588A759C5 /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -43,6 +45,8 @@
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		1B6271452807A9A600A1BADF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1B6271472807AA6500A1BADF /* FCMBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCMBridge.swift; sourceTree = "<group>"; };
+		1B62715F2807B79F00A1BADF /* AuthBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthBridge.swift; sourceTree = "<group>"; };
+		1B6271612807B9F400A1BADF /* UserBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserBridge.swift; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		5EE22D05057765919E649945 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		5FC388AB79132D7588A759C5 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -128,6 +132,8 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				1B6271472807AA6500A1BADF /* FCMBridge.swift */,
+				1B62715F2807B79F00A1BADF /* AuthBridge.swift */,
+				1B6271612807B9F400A1BADF /* UserBridge.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				1B6271452807A9A600A1BADF /* GoogleService-Info.plist */,
 			);
@@ -301,8 +307,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B6271622807B9F400A1BADF /* UserBridge.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1B6271482807AA6500A1BADF /* FCMBridge.swift in Sources */,
+				1B6271602807B79F00A1BADF /* AuthBridge.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
