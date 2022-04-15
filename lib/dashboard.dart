@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' show get;
+import 'package:nodifier/add_hive_id.dart';
+import 'package:nodifier/drawer.dart';
 import 'package:nodifier/models/dlux_runners.dart';
 import 'package:nodifier/models/user_data_model.dart';
 import 'package:nodifier/retry_screen.dart';
 
-class DluxNode {
-  final String name;
-  final double g;
-  final bool isRunner;
-  final bool isQueue;
-  DluxNode({
-    required this.name,
-    required this.g,
-    required this.isRunner,
-    required this.isQueue,
-  });
-}
-
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key, required this.model}) : super(key: key);
+  const DashboardScreen({
+    Key? key,
+    required this.model,
+    required this.runnerPath,
+    required this.queuePath,
+    required this.title,
+  }) : super(key: key);
   final UserDataModel model;
+  final String runnerPath;
+  final String queuePath;
+  final String title;
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -36,11 +34,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<List<DluxNode>> _getDluxData() async {
-    const dluxRunnersApi = 'https://token.dlux.io/runners';
-    const dluxQueueApi = 'https://token.dlux.io/queue';
     try {
-      var responseDluxRunners = await get(Uri.parse(dluxRunnersApi));
-      var responseDluxQueue = await get(Uri.parse(dluxQueueApi));
+      var responseDluxRunners = await get(Uri.parse(widget.runnerPath));
+      var responseDluxQueue = await get(Uri.parse(widget.queuePath));
       var dluxRunners =
           DluxRunners.fromJsonString(responseDluxRunners.body).runners.names;
       var dluxQueue =
@@ -168,9 +164,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nodifier'),
+        title: Text(widget.title),
       ),
       body: _body(),
+      drawer: DrawerScreen(model: widget.model),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          var settings = AddHiveScreen(model: widget.model);
+          var route = MaterialPageRoute(builder: (c) => settings);
+          Navigator.of(context).push(route);
+        },
+        child: const Icon(Icons.settings),
+      ),
     );
   }
 }

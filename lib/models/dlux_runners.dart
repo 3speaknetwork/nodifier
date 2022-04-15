@@ -2,6 +2,19 @@ import 'dart:convert';
 
 import 'package:nodifier/models/safe_convert.dart';
 
+class DluxNode {
+  final String name;
+  final double g;
+  final bool isRunner;
+  final bool isQueue;
+  DluxNode({
+    required this.name,
+    required this.g,
+    required this.isRunner,
+    required this.isQueue,
+  });
+}
+
 class DRunner {
   final String name;
   final double g;

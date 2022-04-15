@@ -57,19 +57,17 @@ class _MyHomePageState extends State<MyHomePage> {
       var userResult = await userPlatform.invokeMethod('data');
       debugPrint("userResult is $userResult");
       var result = UserDataModel.fromJsonString(userResult);
-      if (result != null) {
-        setState(() {
-          isLoading = false;
-          var dashboard = DashboardScreen(model: result);
-          var route = MaterialPageRoute(builder: (c) => dashboard);
-          Navigator.of(context).pushReplacement(route);
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-          showError('Invalid JSON received.');
-        });
-      }
+      setState(() {
+        isLoading = false;
+        var dashboard = DashboardScreen(
+          title: 'Speak Nodes',
+          model: result,
+          runnerPath: 'https://spkinstant.hivehoneycomb.com/runners',
+          queuePath: 'https://spkinstant.hivehoneycomb.com/queue',
+        );
+        var route = MaterialPageRoute(builder: (c) => dashboard);
+        Navigator.of(context).pushReplacement(route);
+      });
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -79,9 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void showError(String String) {
+  void showError(String string) {
     Fluttertoast.showToast(
-      msg: 'Error: $String',
+      msg: 'Error: $string',
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       backgroundColor: Colors.red,
@@ -97,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: isLoading
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : ElevatedButton(
                 child: const Text('Let\'s get started'),
                 onPressed: () async {
