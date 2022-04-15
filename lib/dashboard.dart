@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' show get;
 import 'package:nodifier/models/dlux_runners.dart';
 import 'package:nodifier/models/user_data_model.dart';
+import 'package:nodifier/retry_screen.dart';
 
 class DluxNode {
   final String name;
@@ -26,23 +27,18 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  var isLoading = false;
-  List<DluxNode> dluxList = [];
+  late Future<List<DluxNode>> _loadData;
 
   @override
   void initState() {
     super.initState();
-    getDluxData();
+    _loadData = _getDluxData();
   }
 
-  void getDluxData() async {
+  Future<List<DluxNode>> _getDluxData() async {
     const dluxRunnersApi = 'https://token.dlux.io/runners';
     const dluxQueueApi = 'https://token.dlux.io/queue';
     try {
-      setState(() {
-        isLoading = true;
-        dluxList = [];
-      });
       var responseDluxRunners = await get(Uri.parse(dluxRunnersApi));
       var responseDluxQueue = await get(Uri.parse(dluxQueueApi));
       var dluxRunners =
@@ -68,20 +64,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
           dluxRunners.removeWhere((e) => e.name == last.name);
         }
       }
-      setState(() {
-        isLoading = false;
-        dluxList = list;
-      });
+      list.sort((a, b) => a.g > b.g
+          ? -1
+          : a.g < b.g
+              ? 1
+              : 0);
+      return list;
     } catch (e) {
-      setState(() {
-        isLoading = false;
-        debugPrint('Error: ${e.toString()}');
-        showError(e.toString());
-      });
+      debugPrint('Error: ${e.toString()}');
+      _showError(e.toString());
+      rethrow;
     }
   }
 
-  void showError(String string) {
+  void _showError(String string) {
     Fluttertoast.showToast(
       msg: 'Error: $string',
       toastLength: Toast.LENGTH_SHORT,
@@ -91,52 +87,80 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget listView() {
-    return ListView.separated(
-      itemBuilder: (c, i) {
-        return ListTile(
-          title: Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _listView(List<DluxNode> dluxList) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: RefreshIndicator(
+        onRefresh: () {
+          return _loadData = _getDluxData();
+        },
+        child: ListView.separated(
+          itemBuilder: (c, i) {
+            return ListTile(
+              title: Row(
                 children: [
-                  Text(
-                    dluxList[i].name,
-                    style: TextStyle(
-                      color: widget.model.dlux.contains(dluxList[i].name)
-                          ? Colors.blue
-                          : Colors.black,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        dluxList[i].name,
+                        style: TextStyle(
+                          color: widget.model.dlux.contains(dluxList[i].name)
+                              ? Colors.blue
+                              : Colors.black,
+                        ),
+                      ),
+                      Text((dluxList[i].g / 1000.0).toStringAsFixed(3))
+                    ],
                   ),
-                  Text((dluxList[i].g / 100.0).toStringAsFixed(2))
+                  const Spacer(),
+                  Column(
+                    children: [
+                      dluxList[i].isQueue
+                          ? const Icon(Icons.check)
+                          : const Icon(Icons.clear),
+                      const SizedBox(height: 5),
+                      const Text('Consensus?')
+                    ],
+                  ),
+                  const SizedBox(width: 5),
+                  Column(
+                    children: [
+                      dluxList[i].isRunner
+                          ? const Icon(Icons.check)
+                          : const Icon(Icons.clear),
+                      const SizedBox(height: 5),
+                      const Text('Runner?')
+                    ],
+                  )
                 ],
               ),
-              const Spacer(),
-              Column(
-                children: [
-                  dluxList[i].isQueue
-                      ? const Icon(Icons.check)
-                      : const Icon(Icons.clear),
-                  const SizedBox(height: 5),
-                  const Text('Consensus?')
-                ],
-              ),
-              const SizedBox(width: 5),
-              Column(
-                children: [
-                  dluxList[i].isRunner
-                      ? const Icon(Icons.check)
-                      : const Icon(Icons.clear),
-                  const SizedBox(height: 5),
-                  const Text('Runner?')
-                ],
-              )
-            ],
-          ),
-        );
+            );
+          },
+          separatorBuilder: (c, i) => const Divider(),
+          itemCount: dluxList.length,
+        ),
+      ),
+    );
+  }
+
+  Widget _body() {
+    return FutureBuilder(
+      future: _loadData,
+      builder: (builder, snapshot) {
+        if (snapshot.hasError &&
+            snapshot.connectionState == ConnectionState.done) {
+          return RetryScreen(
+              error: snapshot.error?.toString() ?? 'Something went wrong',
+              onRetry: () => {_getDluxData});
+        } else if (snapshot.hasData &&
+            snapshot.connectionState == ConnectionState.done) {
+          List<DluxNode> items = snapshot.data! as List<DluxNode>;
+          return _listView(items);
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
       },
-      separatorBuilder: (c, i) => const Divider(),
-      itemCount: dluxList.length,
     );
   }
 
@@ -146,9 +170,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('Nodifier'),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : listView(),
+      body: _body(),
     );
   }
 }
