@@ -92,6 +92,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         child: ListView.separated(
           itemBuilder: (c, i) {
+            var result = (widget.title == 'Speak Nodes')
+                ? widget.model.spkcc.contains(dluxList[i].name)
+                : widget.model.dlux.contains(dluxList[i].name);
             return ListTile(
               title: Row(
                 children: [
@@ -101,10 +104,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Text(
                         dluxList[i].name,
                         style: TextStyle(
-                          color: widget.model.dlux.contains(dluxList[i].name)
-                              ? Colors.blue
-                              : Colors.black,
-                        ),
+                            color: result ? Colors.blue : Colors.black,
+                            fontWeight:
+                                result ? FontWeight.bold : FontWeight.normal,
+                            fontSize: result ? 20 : 16),
                       ),
                       Text((dluxList[i].g / 1000.0).toStringAsFixed(3))
                     ],
