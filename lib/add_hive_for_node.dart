@@ -50,6 +50,7 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
       setState(() {
         isLoading = false;
         Navigator.of(context).pop();
+        Navigator.of(context).pop();
       });
     } catch (e) {
       setState(() {
@@ -96,14 +97,19 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
   }
 
   PreferredSizeWidget _appBar() {
-    return AppBar(title: const Text('Manage Notifications'));
+    return AppBar(title: const Text('Add Node name'));
   }
 
   Widget _body() {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Container(
       margin: const EdgeInsets.all(10),
       child: TextField(
         autocorrect: false,
+        decoration: const InputDecoration(
+            hintText: 'Enter hive user name here. Do not add `@` sign.'),
         onChanged: (newText) {
           setState(() {
             text = newText;
@@ -121,6 +127,8 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (text.isNotEmpty) {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            currentFocus.unfocus();
             _showBottomSheet();
           }
         },
