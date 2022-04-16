@@ -1,3 +1,4 @@
+import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nodifier/models/user_data_model.dart';
@@ -79,6 +80,44 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
     );
   }
 
+  void _showBottomSheet() {
+    showAdaptiveActionSheet(
+      context: context,
+      title: const Text('Select action'),
+      androidBorderRadius: 30,
+      actions: <BottomSheetAction>[
+        BottomSheetAction(
+          title: const Text('spkcc'),
+          onPressed: () {
+            setState(() {
+              text = '';
+              Navigator.of(context).pop();
+            });
+          },
+        ),
+        BottomSheetAction(
+          title: const Text('dlux'),
+          onPressed: () {
+            setState(() {
+              text = '';
+              Navigator.of(context).pop();
+            });
+          },
+        ),
+        BottomSheetAction(
+          title: const Text('spkcc & dlux'),
+          onPressed: () {
+            setState(() {
+              text = '';
+              Navigator.of(context).pop();
+            });
+          },
+        ),
+      ],
+      cancelAction: CancelAction(title: const Text('Cancel')),
+    );
+  }
+
   PreferredSizeWidget _appBar() {
     return AppBar(
       title: TextField(
@@ -89,7 +128,7 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
           });
         },
         onEditingComplete: () {
-          debugPrint('Hello');
+          _showBottomSheet();
         },
       ),
     );
