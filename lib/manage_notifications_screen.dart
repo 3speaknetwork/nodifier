@@ -1,37 +1,41 @@
-import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nodifier/add_hive_for_node.dart';
 import 'package:nodifier/models/user_data_model.dart';
 import 'package:nodifier/retry_screen.dart';
 
-class AddHiveScreen extends StatefulWidget {
-  const AddHiveScreen({Key? key, required this.model}) : super(key: key);
+class ManageNotificationsScreen extends StatefulWidget {
+  const ManageNotificationsScreen({Key? key, required this.model})
+      : super(key: key);
   final UserDataModel model;
 
   @override
-  State<AddHiveScreen> createState() => _AddHiveScreenState();
+  State<ManageNotificationsScreen> createState() =>
+      _ManageNotificationsScreenState();
 }
 
-class _AddHiveScreenState extends State<AddHiveScreen> {
-  var text = '';
-  late TextEditingController _controller;
+class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
   final userPlatform = const MethodChannel('com.sagar.nodifier/user');
   late Future<UserDataModel> _loadData;
+  UserDataModel model = UserDataModel(token: '', dlux: [], spkcc: []);
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
     _loadData = _refreshData();
   }
 
   Future<UserDataModel> _refreshData() async {
     var userResult = await userPlatform.invokeMethod('data');
     debugPrint("userResult is $userResult");
-    return UserDataModel.fromJsonString(userResult);
+    var model = UserDataModel.fromJsonString(userResult);
+    setState(() {
+      this.model = model;
+    });
+    return model;
   }
 
-  Widget _listView(UserDataModel model) {
+  Widget _listView() {
     if (model.dlux.isEmpty && model.spkcc.isEmpty) {
       return const Center(child: Text('No nodes found'));
     }
@@ -71,8 +75,7 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
               onRetry: () => {_refreshData});
         } else if (snapshot.hasData &&
             snapshot.connectionState == ConnectionState.done) {
-          UserDataModel model = snapshot.data! as UserDataModel;
-          return _listView(model);
+          return _listView();
         } else {
           return const Center(child: CircularProgressIndicator());
         }
@@ -80,58 +83,8 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
     );
   }
 
-  void _showBottomSheet() {
-    showAdaptiveActionSheet(
-      context: context,
-      title: const Text('Select action'),
-      androidBorderRadius: 30,
-      actions: <BottomSheetAction>[
-        BottomSheetAction(
-          title: const Text('spkcc'),
-          onPressed: () {
-            setState(() {
-              text = '';
-              Navigator.of(context).pop();
-            });
-          },
-        ),
-        BottomSheetAction(
-          title: const Text('dlux'),
-          onPressed: () {
-            setState(() {
-              text = '';
-              Navigator.of(context).pop();
-            });
-          },
-        ),
-        BottomSheetAction(
-          title: const Text('spkcc & dlux'),
-          onPressed: () {
-            setState(() {
-              text = '';
-              Navigator.of(context).pop();
-            });
-          },
-        ),
-      ],
-      cancelAction: CancelAction(title: const Text('Cancel')),
-    );
-  }
-
   PreferredSizeWidget _appBar() {
-    return AppBar(
-      title: TextField(
-        controller: _controller,
-        onChanged: (value) {
-          setState(() {
-            text = value;
-          });
-        },
-        onEditingComplete: () {
-          _showBottomSheet();
-        },
-      ),
-    );
+    return AppBar(title: const Text('Manage Notifications'));
   }
 
   @override
@@ -139,6 +92,21 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
     return Scaffold(
       appBar: _appBar(),
       body: _body(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          var screen = AddHiveScreen(
+            model: model,
+            result: (response) {
+              setState(() {
+                model = response;
+              });
+            },
+          );
+          var route = MaterialPageRoute(builder: (c) => screen);
+          Navigator.of(context).push(route);
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

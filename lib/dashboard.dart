@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' show get;
-import 'package:nodifier/add_hive_id.dart';
 import 'package:nodifier/drawer.dart';
+import 'package:nodifier/manage_notifications_screen.dart';
 import 'package:nodifier/models/dlux_runners.dart';
 import 'package:nodifier/models/user_data_model.dart';
 import 'package:nodifier/retry_screen.dart';
@@ -170,7 +170,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       drawer: DrawerScreen(model: widget.model),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          var settings = AddHiveScreen(model: widget.model);
+          var settings = ManageNotificationsScreen(model: widget.model);
           var route = MaterialPageRoute(builder: (c) => settings);
           Navigator.of(context).push(route);
         },

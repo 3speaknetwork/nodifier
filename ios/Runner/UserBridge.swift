@@ -27,8 +27,19 @@ class UserBridge {
 			name: "com.sagar.nodifier/user",
 			binaryMessenger: controller.binaryMessenger)
 		self.channel?.setMethodCallHandler { [weak self] (call, result) in
-			if (call.method == "data") {
+			if call.method == "data" {
 				self?.fetchData(result)
+			} else if call.method == "update",
+								let arguments = call.arguments as? NSDictionary,
+								let spkcc = arguments ["spkcc"] as? [String],
+								let dlux = arguments ["dlux"] as? [String] {
+				self?.updateDocument(spkcc, dlux: dlux, result: result)
+			} else {
+				let flutterError = FlutterError(
+					code: "Failure",
+					message: "Method not implemented",
+					details: nil)
+				result(flutterError)
 			}
 		}
 	}
@@ -124,6 +135,51 @@ class UserBridge {
 						result(flutterError)
 					} else {
 						let response = FireStoreUserJsonResponse(spkcc: [], dlux: [], token: fcmToken!)
+						let string = self.dataToString(try! JSONEncoder().encode(response))
+						result(string)
+					}
+				}
+			}
+		}
+	}
+
+	func updateDocument(_ spkcc: [String], dlux: [String], result: @escaping FlutterResult) {
+		guard
+			let user = Auth.auth().currentUser,
+			user.isAnonymous,
+			!user.uid.isEmpty
+		else {
+			let flutterError = FlutterError(
+				code: "AuthFailed",
+				message: "Firebase anonymous Auth failed.",
+				details: nil)
+			result(flutterError)
+			return
+		}
+		let db = Firestore.firestore()
+		let documentRef = db.collection("users").document(user.uid)
+		Messaging.messaging().retrieveFCMToken(forSenderID: "775071582265") { fcmToken, error in
+			if (error != nil || fcmToken == nil) {
+				// couldn't find fcm token
+				let flutterError = FlutterError(
+					code: "FCMFailed",
+					message: "Couldn't found FCM Token. \(error?.localizedDescription ?? "")",
+					details: nil)
+				result(flutterError)
+			} else {
+				documentRef.setData([
+					"dlux": dlux,
+					"spkcc": spkcc,
+					"token": fcmToken!
+				]) { error in
+					if let err = error {
+						let flutterError = FlutterError(
+							code: "FireStoreFailed",
+							message: "Couldn't write to firestore. \(err.localizedDescription)",
+							details: nil)
+						result(flutterError)
+					} else {
+						let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, token: fcmToken!)
 						let string = self.dataToString(try! JSONEncoder().encode(response))
 						result(string)
 					}
