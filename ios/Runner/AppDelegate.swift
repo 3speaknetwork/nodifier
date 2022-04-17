@@ -5,10 +5,12 @@ import FirebaseMessaging
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
+	weak var app: UIApplication? = nil
 	override func application(
 		_ application: UIApplication,
 		didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 	) -> Bool {
+		app = application
 		let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
 		GeneratedPluginRegistrant.register(with: self)
 		FirebaseApp.configure()
@@ -24,7 +26,7 @@ import FirebaseMessaging
 		let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
 		UNUserNotificationCenter.current().requestAuthorization(
 			options: authOptions, completionHandler: handler)
-		UIApplication.shared.registerForRemoteNotifications()
+		app?.registerForRemoteNotifications()
 	}
 }
 

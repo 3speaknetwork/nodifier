@@ -71,7 +71,8 @@ class UserBridge {
 				self.newOrInvalidDocumentCase(user, result: result)
 				return
 			}
-			Messaging.messaging().retrieveFCMToken(forSenderID: "775071582265") { fcmToken, error in
+			Messaging.messaging().token { fcmToken, error in
+				debugPrint("FCM Token is \(fcmToken ?? "")")
 				if (error != nil || fcmToken == nil) {
 					// couldn't find fcm token
 					let flutterError = FlutterError(
@@ -113,7 +114,8 @@ class UserBridge {
 	func newOrInvalidDocumentCase(_ user: User, result: @escaping FlutterResult) {
 		let db = Firestore.firestore()
 		let documentRef = db.collection("users").document(user.uid)
-		Messaging.messaging().retrieveFCMToken(forSenderID: "775071582265") { fcmToken, error in
+		Messaging.messaging().token { fcmToken, error in
+			debugPrint("FCM Token is \(fcmToken ?? "")")
 			if (error != nil || fcmToken == nil) {
 				// couldn't find fcm token
 				let flutterError = FlutterError(
@@ -158,7 +160,7 @@ class UserBridge {
 		}
 		let db = Firestore.firestore()
 		let documentRef = db.collection("users").document(user.uid)
-		Messaging.messaging().retrieveFCMToken(forSenderID: "775071582265") { fcmToken, error in
+		Messaging.messaging().token { fcmToken, error in
 			if (error != nil || fcmToken == nil) {
 				// couldn't find fcm token
 				let flutterError = FlutterError(
