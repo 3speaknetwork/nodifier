@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "775071582265",
+    "project_id": "speak-notifier",
+    "storage_bucket": "speak-notifier.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:775071582265:android:43a3d46e5c3cc58aa0a5e8",
+        "android_client_info": {
+          "package_name": "com.sagar.nodifier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "775071582265-5c48slqebvngv7dqrvfso4b7ij9729vs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTuRvpJeuhUrfQ7ncU219f3VfYvaxWkiE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "775071582265-5c48slqebvngv7dqrvfso4b7ij9729vs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "775071582265-5qda4f4d6l1194l6gpgc4os44bhujgsn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sagarkothari88.SpeakNotifier"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
