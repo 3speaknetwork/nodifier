@@ -46,9 +46,9 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
       });
       var userResult = await update(spkcc, dlux);
       var result = UserDataModel.fromJsonString(userResult);
-      widget.result(result);
       setState(() {
         isLoading = false;
+        widget.result(result);
         Navigator.of(context).pop();
         Navigator.of(context).pop();
       });

@@ -7,9 +7,13 @@ import 'package:nodifier/models/user_data_model.dart';
 import 'package:nodifier/retry_screen.dart';
 
 class ManageNotificationsScreen extends StatefulWidget {
-  const ManageNotificationsScreen({Key? key, required this.model})
-      : super(key: key);
+  const ManageNotificationsScreen({
+    Key? key,
+    required this.model,
+    required this.result,
+  }) : super(key: key);
   final UserDataModel model;
+  final Function(UserDataModel) result;
 
   @override
   State<ManageNotificationsScreen> createState() =>
@@ -184,6 +188,7 @@ class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
             result: (response) {
               setState(() {
                 model = response;
+                widget.result(response);
               });
             },
           );
