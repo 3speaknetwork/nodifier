@@ -71,4 +71,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.3'
     implementation 'com.google.firebase:firebase-messaging-ktx:23.0.3'
     implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.code.gson:gson:2.9.0'
 }

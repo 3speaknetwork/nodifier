@@ -6,13 +6,12 @@ import androidx.annotation.NonNull
 import com.google.android.gms.tasks.OnCompleteListener
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 
 class MainActivity : FlutterActivity() {
     private val fcmBridge = "com.sagar.nodifier/fcm"
@@ -24,16 +23,22 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         auth = Firebase.auth
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, fcmBridge).setMethodCallHandler { call, result ->
-            result
             if (call.method == "register") {
                 token(result)
             }
         }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, authBridge).setMethodCallHandler { call, result ->
-            result
             if (call.method == "login") {
                 login(result)
+            }
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, userBridge).setMethodCallHandler { call, result ->
+            if (call.method == "data") {
+                data(result)
+            } else if (call.method == "update" && call.argument<List<String>>("spkcc") != null && call.argument<List<String>>("dlux") != null) {
+                updateDocument(call.argument<List<String>>("spkcc") ?: listOf(), call.argument<List<String>>("dlux") ?: listOf(), result)
             }
         }
     }
@@ -55,7 +60,7 @@ class MainActivity : FlutterActivity() {
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("Sign in", "signInAnonymously:success")
-                        val user = auth.currentUser
+                        // val user = auth.currentUser
                         result.success("true")
                     } else {
                         result.error("AuthFailed", "Firebase anonymous Auth failed. ${task.exception.toString()}", "")
@@ -70,30 +75,92 @@ class MainActivity : FlutterActivity() {
             return
         }
         val db = Firebase.firestore
-        var docRef = db.collection("users").document(firebaseUser.uid)
+        val docRef = db.collection("users").document(firebaseUser.uid)
         docRef.get().addOnSuccessListener { snapshot ->
             if (snapshot != null && snapshot.exists() && snapshot.data != null) {
-                var token = snapshot.data?.get("token") as? String
-                var spkcc = snapshot.data?.get("spkcc") as? List<String>
-                var dlux = snapshot.data?.get("spkcc") as? List<String>
+                val token = snapshot.data?.get("token") as? String
+                val spkcc = snapshot.data?.get("spkcc") as? List<String>
+                val dlux = snapshot.data?.get("spkcc") as? List<String>
                 if (token != null && spkcc != null && dlux != null) {
-
+                    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            result.error("Token", "Firebase Cloud Messaging Token generation failed. ${task.exception.toString()}", "")
+                            return@OnCompleteListener
+                        }
+                        val newToken = task.result
+                        if (newToken != token) {
+                            updateDocument(spkcc, dlux, result)
+                        } else {
+                            val map = hashMapOf(
+                                    "token" to token,
+                                    "spkcc" to spkcc,
+                                    "dlux" to dlux,
+                            )
+                            result.success(Gson().toJson(map).toString())
+                        }
+                    })
                 } else {
-
+                    newOrInvalidDocumentCase(result)
                 }
             } else {
-
+                newOrInvalidDocumentCase(result)
             }
         }.addOnFailureListener {
-
+            result.error("Firestore", "Firebase Firestore write failed. $it", "")
         }
-//
-//                .add(user)
-//                .addOnSuccessListener { documentReference ->
-//                    Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-//                }
-//                .addOnFailureListener { e ->
-//                    Log.w(TAG, "Error adding document", e)
-//                }
+    }
+
+    private fun updateDocument(spkcc: List<String>, dlux: List<String>, result: MethodChannel.Result) {
+        val firebaseUser = auth.currentUser
+        if (firebaseUser == null) {
+            result.error("AuthFailed", "Firebase anonymous Auth failed.", "")
+            return
+        }
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                result.error("Token", "Firebase Cloud Messaging Token generation failed. ${task.exception.toString()}", "")
+                return@OnCompleteListener
+            }
+            val newToken = task.result
+            val db = Firebase.firestore
+            val docRef = db.collection("users").document(firebaseUser.uid)
+            val map = hashMapOf(
+                    "token" to newToken,
+                    "spkcc" to spkcc,
+                    "dlux" to dlux,
+            )
+            docRef.set(map).addOnSuccessListener {
+                result.success(Gson().toJson(map).toString())
+            }.addOnFailureListener {
+                result.error("Firestore", "Firebase Firestore write failed. $it", "")
+            }
+        })
+    }
+
+    private fun newOrInvalidDocumentCase(result: MethodChannel.Result) {
+        val firebaseUser = auth.currentUser
+        if (firebaseUser == null) {
+            result.error("AuthFailed", "Firebase anonymous Auth failed.", "")
+            return
+        }
+        val db = Firebase.firestore
+        val docRef = db.collection("users").document(firebaseUser.uid)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                result.error("Token", "Firebase Cloud Messaging Token generation failed. ${task.exception.toString()}", "")
+                return@OnCompleteListener
+            }
+            val token = task.result
+            val map = hashMapOf(
+                    "token" to token,
+                    "spkcc" to listOf<String>(),
+                    "dlux" to listOf<String>(),
+            )
+            docRef.set(map).addOnSuccessListener {
+                result.success(Gson().toJson(map).toString())
+            }.addOnFailureListener {
+                result.error("Firestore", "Firebase Firestore write failed. $it", "")
+            }
+        })
     }
 }
