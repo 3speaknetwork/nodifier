@@ -10,6 +10,7 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -60,5 +61,39 @@ class MainActivity : FlutterActivity() {
                         result.error("AuthFailed", "Firebase anonymous Auth failed. ${task.exception.toString()}", "")
                     }
                 }
+    }
+
+    private fun data(result: MethodChannel.Result) {
+        val firebaseUser = auth.currentUser
+        if (firebaseUser == null) {
+            result.error("AuthFailed", "Firebase anonymous Auth failed.", "")
+            return
+        }
+        val db = Firebase.firestore
+        var docRef = db.collection("users").document(firebaseUser.uid)
+        docRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot != null && snapshot.exists() && snapshot.data != null) {
+                var token = snapshot.data?.get("token") as? String
+                var spkcc = snapshot.data?.get("spkcc") as? List<String>
+                var dlux = snapshot.data?.get("spkcc") as? List<String>
+                if (token != null && spkcc != null && dlux != null) {
+
+                } else {
+
+                }
+            } else {
+
+            }
+        }.addOnFailureListener {
+
+        }
+//
+//                .add(user)
+//                .addOnSuccessListener { documentReference ->
+//                    Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+//                }
+//                .addOnFailureListener { e ->
+//                    Log.w(TAG, "Error adding document", e)
+//                }
     }
 }

@@ -32,7 +32,7 @@
             android:value="2" />
 
        <service
-           android:name="."
+           android:name="com.sagar.nodifier.FCMService"
            android:exported="false">
            <intent-filter>
                <action android:name="com.google.firebase.MESSAGING_EVENT" />
