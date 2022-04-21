@@ -1,7 +1,6 @@
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nodifier/add_hive_for_node.dart';
 import 'package:nodifier/models/user_data_model.dart';
 import 'package:nodifier/retry_screen.dart';
@@ -82,13 +81,8 @@ class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
   }
 
   void showError(String string) {
-    // Fluttertoast.showToast(
-    //   msg: 'Error: $string',
-    //   toastLength: Toast.LENGTH_SHORT,
-    //   gravity: ToastGravity.BOTTOM,
-    //   backgroundColor: Colors.red,
-    //   textColor: Colors.white,
-    // );
+    var snackbar = SnackBar(content: Text('Error: $string'));
+    Scaffold.of(context).showSnackBar(snackbar);
   }
 
   void _showBottomSheet(String type, String title) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' show get;
 import 'package:nodifier/drawer.dart';
 import 'package:nodifier/manage_notifications_screen.dart';
@@ -76,13 +75,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _showError(String string) {
-    // Fluttertoast.showToast(
-    //   msg: 'Error: $string',
-    //   toastLength: Toast.LENGTH_SHORT,
-    //   gravity: ToastGravity.BOTTOM,
-    //   backgroundColor: Colors.red,
-    //   textColor: Colors.white,
-    // );
+    var snackbar = SnackBar(content: Text('Error: $string'));
+    Scaffold.of(context).showSnackBar(snackbar);
   }
 
   Widget _listView(List<DluxNode> dluxList) {

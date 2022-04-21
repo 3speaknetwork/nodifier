@@ -1,7 +1,6 @@
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nodifier/models/user_data_model.dart';
 
 class AddHiveScreen extends StatefulWidget {
@@ -30,13 +29,8 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
   }
 
   void showError(String string) {
-    // Fluttertoast.showToast(
-    //   msg: 'Error: $string',
-    //   toastLength: Toast.LENGTH_SHORT,
-    //   gravity: ToastGravity.BOTTOM,
-    //   backgroundColor: Colors.red,
-    //   textColor: Colors.white,
-    // );
+    var snackbar = SnackBar(content: Text('Error: $string'));
+    Scaffold.of(context).showSnackBar(snackbar);
   }
 
   void updateWith(List<String> spkcc, List<String> dlux) async {

@@ -1,3 +1,5 @@
+package com.sagar.nodifier
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,10 +11,8 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.sagar.nodifier.MainActivity
-import com.sagar.nodifier.R
 
-class FCMService : FirebaseMessagingService() {
+class MyFirebaseService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         // [START_EXCLUDE]
         // There are two types of messages data messages and notification messages. Data messages are handled
@@ -37,7 +37,7 @@ class FCMService : FirebaseMessagingService() {
                 // scheduleJob()
             } else {
                 // Handle message within 10 seconds
-               //  handleNow()
+                //  handleNow()
             }
         }
 

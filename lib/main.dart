@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nodifier/dashboard.dart';
 import 'package:nodifier/models/user_data_model.dart';
 
@@ -78,13 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void showError(String string) {
-    // Fluttertoast.showToast(
-    //   msg: 'Error: $string',
-    //   toastLength: Toast.LENGTH_SHORT,
-    //   gravity: ToastGravity.BOTTOM,
-    //   backgroundColor: Colors.red,
-    //   textColor: Colors.white,
-    // );
+    var snackbar = SnackBar(content: Text('Error: $string'));
+    Scaffold.of(context).showSnackBar(snackbar);
   }
 
   @override

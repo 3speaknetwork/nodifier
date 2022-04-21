@@ -49,7 +49,8 @@ class MainActivity : FlutterActivity() {
                 result.error("Token", "Firebase Cloud Messaging Token generation failed. ${task.exception.toString()}", "")
                 return@OnCompleteListener
             }
-            // val token = task.result
+            val token = task.result
+            Log.d("FCM", "Token is $token")
             result.success("true")
         })
     }
@@ -88,6 +89,7 @@ class MainActivity : FlutterActivity() {
                             return@OnCompleteListener
                         }
                         val newToken = task.result
+                        Log.d("FCM", "NewToken is $newToken")
                         if (newToken != token) {
                             updateDocument(spkcc, dlux, result)
                         } else {
@@ -122,6 +124,7 @@ class MainActivity : FlutterActivity() {
                 return@OnCompleteListener
             }
             val newToken = task.result
+            Log.d("FCM", "NewToken is $newToken")
             val db = Firebase.firestore
             val docRef = db.collection("users").document(firebaseUser.uid)
             val map = hashMapOf(
@@ -151,6 +154,7 @@ class MainActivity : FlutterActivity() {
                 return@OnCompleteListener
             }
             val token = task.result
+            Log.d("FCM", "Token is $token")
             val map = hashMapOf(
                     "token" to token,
                     "spkcc" to listOf<String>(),
