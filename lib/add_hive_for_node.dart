@@ -30,7 +30,7 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
 
   void showError(String string) {
     var snackbar = SnackBar(content: Text('Error: $string'));
-    Scaffold.of(context).showSnackBar(snackbar);
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   void updateWith(List<String> spkcc, List<String> dlux) async {

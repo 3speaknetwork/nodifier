@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void showError(String string) {
     var snackbar = SnackBar(content: Text('Error: $string'));
-    Scaffold.of(context).showSnackBar(snackbar);
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   @override

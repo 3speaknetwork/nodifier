@@ -76,7 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _showError(String string) {
     var snackbar = SnackBar(content: Text('Error: $string'));
-    Scaffold.of(context).showSnackBar(snackbar);
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   Widget _listView(List<DluxNode> dluxList) {

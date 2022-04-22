@@ -82,7 +82,7 @@ class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
 
   void showError(String string) {
     var snackbar = SnackBar(content: Text('Error: $string'));
-    Scaffold.of(context).showSnackBar(snackbar);
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   void _showBottomSheet(String type, String title) {
