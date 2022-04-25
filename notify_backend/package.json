@@ -1,0 +1,17 @@
+{
+  "name": "notify_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/firestore": "^5.0.2",
+    "axios": "^0.26.1",
+    "dotenv": "^16.0.0",
+    "firebase-admin": "^10.0.2"
+  }
+}
