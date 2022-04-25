@@ -141,7 +141,7 @@ class UserBridge {
 							details: nil)
 						result(flutterError)
 					} else {
-						let response = FireStoreUserJsonResponse(spkcc: [], dlux: [], token: fcmToken!)
+						let response = FireStoreUserJsonResponse(spkcc: [], dlux: [], duat: [], token: fcmToken!)
 						let string = self.dataToString(try! JSONEncoder().encode(response))
 						result(string)
 					}
