@@ -22,7 +22,7 @@ class ManageNotificationsScreen extends StatefulWidget {
 class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
   final userPlatform = const MethodChannel('com.sagar.nodifier/user');
   late Future<UserDataModel> _loadData;
-  UserDataModel model = UserDataModel(token: '', dlux: [], spkcc: []);
+  UserDataModel model = UserDataModel(token: '', dlux: [], spkcc: [], duat: []);
   var isLoading = false;
 
   @override
@@ -53,19 +53,25 @@ class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
     );
   }
 
-  Future<String> update(List<String> spkcc, List<String> dlux) async {
+  Future<String> update(
+      List<String> spkcc, List<String> dlux, List<String> duat) async {
     return await userPlatform.invokeMethod('update', <String, List<String>>{
       'spkcc': spkcc,
       'dlux': dlux,
+      'duat': duat,
     });
   }
 
-  void updateWith(List<String> spkcc, List<String> dlux) async {
+  void updateWith(
+    List<String> spkcc,
+    List<String> dlux,
+    List<String> duat,
+  ) async {
     try {
       setState(() {
         isLoading = true;
       });
-      var userResult = await update(spkcc, dlux);
+      var userResult = await update(spkcc, dlux, duat);
       var result = UserDataModel.fromJsonString(userResult);
       setState(() {
         model = result;
@@ -81,8 +87,8 @@ class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
   }
 
   void showError(String string) {
-    var snackbar = SnackBar(content: Text('Error: $string'));
-    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    var snackBar = SnackBar(content: Text('Error: $string'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void _showBottomSheet(String type, String title) {
@@ -98,12 +104,15 @@ class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
             Navigator.of(context).pop();
             var spkcc = widget.model.spkcc;
             var dlux = widget.model.dlux;
+            var duat = widget.model.duat;
             if (type == 'spkcc') {
               spkcc.remove(title);
-            } else {
+            } else if (type == 'dlux') {
               dlux.remove(title);
+            } else {
+              duat.remove(title);
             }
-            updateWith(spkcc, dlux);
+            updateWith(spkcc, dlux, duat);
           },
         ),
       ],
@@ -123,8 +132,20 @@ class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
     );
   }
 
+  /*
+  0 spkcc nodes
+  1 bla
+  2 bla
+  3 dlux nodes
+  4 bla
+  5 bla
+  6 duat nodes
+  7 bla
+  8 bla
+   */
+
   Widget _listView() {
-    if (model.dlux.isEmpty && model.spkcc.isEmpty) {
+    if (model.dlux.isEmpty && model.spkcc.isEmpty && model.duat.isEmpty) {
       return const Center(child: Text('No nodes found'));
     }
     return ListView.separated(
@@ -135,12 +156,17 @@ class _ManageNotificationsScreenState extends State<ManageNotificationsScreen> {
           return _nodeTile('spkcc', model.spkcc[i - 1]);
         } else if (i - 1 == model.spkcc.length) {
           return _headerTile('Dlux Nodes');
-        } else {
+        } else if (i == model.spkcc.length + model.dlux.length + 2) {
+          return _headerTile('Duat Nodes');
+        } else if (i < model.spkcc.length + model.dlux.length + 2) {
           return _nodeTile('dlux', model.dlux[i - 2 - model.spkcc.length]);
+        } else {
+          return _nodeTile('duat',
+              model.duat[i - 3 - model.spkcc.length - model.dlux.length]);
         }
       },
       separatorBuilder: (c, i) => const Divider(height: 0),
-      itemCount: model.dlux.length + model.spkcc.length + 2,
+      itemCount: model.dlux.length + model.spkcc.length + model.duat.length + 3,
     );
   }
 

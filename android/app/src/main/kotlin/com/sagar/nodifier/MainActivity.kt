@@ -37,8 +37,11 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, userBridge).setMethodCallHandler { call, result ->
             if (call.method == "data") {
                 data(result)
-            } else if (call.method == "update" && call.argument<List<String>>("spkcc") != null && call.argument<List<String>>("dlux") != null) {
-                updateDocument(call.argument<List<String>>("spkcc") ?: listOf(), call.argument<List<String>>("dlux") ?: listOf(), result)
+            } else if (call.method == "update") {
+                val spkcc = call.argument<List<String>>("spkcc") ?: listOf()
+                val dlux = call.argument<List<String>>("dlux") ?: listOf()
+                val duat = call.argument<List<String>>("duat") ?: listOf()
+                updateDocument(spkcc, dlux, duat, result)
             }
         }
     }
@@ -80,9 +83,10 @@ class MainActivity : FlutterActivity() {
         docRef.get().addOnSuccessListener { snapshot ->
             if (snapshot != null && snapshot.exists() && snapshot.data != null) {
                 val token = snapshot.data?.get("token") as? String
-                val spkcc = snapshot.data?.get("spkcc") as? List<String>
-                val dlux = snapshot.data?.get("spkcc") as? List<String>
-                if (token != null && spkcc != null && dlux != null) {
+                val spkcc = snapshot.data?.get("spkcc") as? List<String> ?: listOf()
+                val dlux = snapshot.data?.get("dlux") as? List<String> ?: listOf()
+                val duat = snapshot.data?.get("duat") as? List<String> ?: listOf()
+                if (token != null) {
                     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                         if (!task.isSuccessful) {
                             result.error("Token", "Firebase Cloud Messaging Token generation failed. ${task.exception.toString()}", "")
@@ -91,12 +95,13 @@ class MainActivity : FlutterActivity() {
                         val newToken = task.result
                         Log.d("FCM", "NewToken is $newToken")
                         if (newToken != token) {
-                            updateDocument(spkcc, dlux, result)
+                            updateDocument(spkcc, dlux, duat, result)
                         } else {
                             val map = hashMapOf(
                                     "token" to token,
                                     "spkcc" to spkcc,
                                     "dlux" to dlux,
+                                    "duat" to duat,
                             )
                             result.success(Gson().toJson(map).toString())
                         }
@@ -112,7 +117,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun updateDocument(spkcc: List<String>, dlux: List<String>, result: MethodChannel.Result) {
+    private fun updateDocument(spkcc: List<String>, dlux: List<String>, duat: List<String>, result: MethodChannel.Result) {
         val firebaseUser = auth.currentUser
         if (firebaseUser == null) {
             result.error("AuthFailed", "Firebase anonymous Auth failed.", "")
@@ -131,6 +136,7 @@ class MainActivity : FlutterActivity() {
                     "token" to newToken,
                     "spkcc" to spkcc,
                     "dlux" to dlux,
+                    "duat" to duat,
             )
             docRef.set(map).addOnSuccessListener {
                 result.success(Gson().toJson(map).toString())
@@ -159,6 +165,7 @@ class MainActivity : FlutterActivity() {
                     "token" to token,
                     "spkcc" to listOf<String>(),
                     "dlux" to listOf<String>(),
+                    "duat" to listOf<String>(),
             )
             docRef.set(map).addOnSuccessListener {
                 result.success(Gson().toJson(map).toString())

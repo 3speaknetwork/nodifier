@@ -43,6 +43,23 @@ class DrawerScreen extends StatelessWidget {
     );
   }
 
+  Widget _duatNodes(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.dashboard),
+      title: const Text("Duat nodes"),
+      onTap: () {
+        var dashboard = DashboardScreen(
+          title: 'Duat Nodes',
+          model: model,
+          runnerPath: 'https://heyhey.hivehoneycomb.com/runners',
+          queuePath: 'https://heyhey.hivehoneycomb.com/queue',
+        );
+        var route = MaterialPageRoute(builder: (context) => dashboard);
+        Navigator.of(context).pushReplacement(route);
+      },
+    );
+  }
+
   Widget _visitDlux(BuildContext context) {
     return ListTile(
       leading: const Icon(Icons.web),
@@ -143,6 +160,11 @@ class DrawerScreen extends StatelessWidget {
         _joinThreeSpeakDiscord(context),
         _divider(),
         _readLightPaper(context),
+        _divider(),
+        _divider(),
+        _divider(),
+        _divider(),
+        _duatNodes(context),
         _divider(),
       ],
     );

@@ -15,6 +15,7 @@ import FirebaseMessaging
 struct FireStoreUserJsonResponse: Codable {
 	let spkcc: [String]
 	let dlux: [String]
+	let duat: [String]
 	let token: String
 }
 
@@ -30,10 +31,11 @@ class UserBridge {
 			if call.method == "data" {
 				self?.fetchData(result)
 			} else if call.method == "update",
-								let arguments = call.arguments as? NSDictionary,
-								let spkcc = arguments ["spkcc"] as? [String],
-								let dlux = arguments ["dlux"] as? [String] {
-				self?.updateDocument(spkcc, dlux: dlux, result: result)
+								let arguments = call.arguments as? NSDictionary {
+				let spkcc = arguments ["spkcc"] as? [String] ?? []
+				let dlux = arguments ["dlux"] as? [String] ?? []
+				let duat = arguments ["duat"] as? [String] ?? []
+				self?.updateDocument(spkcc, dlux: dlux, duat: duat, result: result)
 			} else {
 				let flutterError = FlutterError(
 					code: "Failure",
@@ -64,13 +66,14 @@ class UserBridge {
 				let document = document,
 				document.exists,
 				let dataDescription = document.data(),
-				let token = dataDescription["token"] as? String,
-				let spkcc = dataDescription["spkcc"] as? [String],
-				let dlux = dataDescription["dlux"] as? [String]
+				let token = dataDescription["token"] as? String
 			else {
 				self.newOrInvalidDocumentCase(user, result: result)
 				return
 			}
+			let spkcc = dataDescription["spkcc"] as? [String] ?? []
+			let dlux = dataDescription["dlux"] as? [String] ?? []
+			let duat = dataDescription["duat"] as? [String] ?? []
 			Messaging.messaging().token { fcmToken, error in
 				debugPrint("FCM Token is \(fcmToken ?? "")")
 				if (error != nil || fcmToken == nil) {
@@ -86,6 +89,7 @@ class UserBridge {
 					documentRef.setData([
 						"dlux": dlux,
 						"spkcc": spkcc,
+						"duat": duat,
 						"token": fcmToken
 					]) { error in
 						if let err = error {
@@ -96,14 +100,14 @@ class UserBridge {
 							result(flutterError)
 						} else {
 							// return json here.
-							let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, token: fcmToken)
+							let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, duat: duat, token: fcmToken)
 							let string = self.dataToString(try! JSONEncoder().encode(response))
 							result(string)
 						}
 					}
 				} else {
 					// no need to update FCM token, so return success response
-					let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, token: token)
+					let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, duat: duat, token: token)
 					let string = self.dataToString(try! JSONEncoder().encode(response))
 					result(string)
 				}
@@ -127,6 +131,7 @@ class UserBridge {
 				documentRef.setData([
 					"dlux": [],
 					"spkcc": [],
+					"duat": [],
 					"token": fcmToken!
 				]) { error in
 					if let err = error {
@@ -145,7 +150,7 @@ class UserBridge {
 		}
 	}
 
-	func updateDocument(_ spkcc: [String], dlux: [String], result: @escaping FlutterResult) {
+	func updateDocument(_ spkcc: [String], dlux: [String], duat: [String], result: @escaping FlutterResult) {
 		guard
 			let user = Auth.auth().currentUser,
 			user.isAnonymous,
@@ -172,6 +177,7 @@ class UserBridge {
 				documentRef.setData([
 					"dlux": dlux,
 					"spkcc": spkcc,
+					"duat": duat,
 					"token": fcmToken!
 				]) { error in
 					if let err = error {
@@ -181,7 +187,7 @@ class UserBridge {
 							details: nil)
 						result(flutterError)
 					} else {
-						let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, token: fcmToken!)
+						let response = FireStoreUserJsonResponse(spkcc: spkcc, dlux: dlux, duat: duat, token: fcmToken!)
 						let string = self.dataToString(try! JSONEncoder().encode(response))
 						result(string)
 					}

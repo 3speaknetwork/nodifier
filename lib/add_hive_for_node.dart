@@ -21,24 +21,27 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
   var text = '';
   final userPlatform = const MethodChannel('com.sagar.nodifier/user');
 
-  Future<String> update(List<String> spkcc, List<String> dlux) async {
+  Future<String> update(
+      List<String> spkcc, List<String> dlux, List<String> duat) async {
     return await userPlatform.invokeMethod('update', <String, List<String>>{
       'spkcc': spkcc,
       'dlux': dlux,
+      'duat': duat,
     });
   }
 
   void showError(String string) {
-    var snackbar = SnackBar(content: Text('Error: $string'));
-    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    var snackBar = SnackBar(content: Text('Error: $string'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void updateWith(List<String> spkcc, List<String> dlux) async {
+  void updateWith(
+      List<String> spkcc, List<String> dlux, List<String> duat) async {
     try {
       setState(() {
         isLoading = true;
       });
-      var userResult = await update(spkcc, dlux);
+      var userResult = await update(spkcc, dlux, duat);
       var result = UserDataModel.fromJsonString(userResult);
       setState(() {
         isLoading = false;
@@ -66,7 +69,8 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
           onPressed: () {
             var spkcc = widget.model.spkcc + [text];
             var dlux = widget.model.dlux;
-            updateWith(spkcc, dlux);
+            var duat = widget.model.duat;
+            updateWith(spkcc, dlux, duat);
           },
         ),
         BottomSheetAction(
@@ -74,15 +78,17 @@ class _AddHiveScreenState extends State<AddHiveScreen> {
           onPressed: () {
             var spkcc = widget.model.spkcc;
             var dlux = widget.model.dlux + [text];
-            updateWith(spkcc, dlux);
+            var duat = widget.model.duat;
+            updateWith(spkcc, dlux, duat);
           },
         ),
         BottomSheetAction(
-          title: const Text('spkcc & dlux'),
+          title: const Text('duat'),
           onPressed: () {
-            var spkcc = widget.model.spkcc + [text];
-            var dlux = widget.model.dlux + [text];
-            updateWith(spkcc, dlux);
+            var spkcc = widget.model.spkcc;
+            var dlux = widget.model.dlux;
+            var duat = widget.model.duat + [text];
+            updateWith(spkcc, dlux, duat);
           },
         ),
       ],

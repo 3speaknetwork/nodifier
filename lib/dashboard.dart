@@ -75,60 +75,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _showError(String string) {
-    var snackbar = SnackBar(content: Text('Error: $string'));
-    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    var snackBar = SnackBar(content: Text('Error: $string'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Widget _listView(List<DluxNode> dluxList) {
     return Container(
       margin: const EdgeInsets.only(top: 10),
-      child: RefreshIndicator(
-        onRefresh: () {
-          return _loadData = _getDluxData();
+      child: ListView.separated(
+        itemBuilder: (c, i) {
+          var result = (widget.title == 'Speak Nodes')
+              ? model.spkcc.contains(dluxList[i].name)
+              : (widget.title == 'Dlux nodes')
+                  ? model.dlux.contains(dluxList[i].name)
+                  : model.duat.contains(dluxList[i].name);
+          return ListTile(
+            tileColor: result ? Colors.grey : Colors.transparent,
+            title: Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(dluxList[i].name),
+                    Text((dluxList[i].g / 1000.0).toStringAsFixed(3))
+                  ],
+                ),
+                const Spacer(),
+                Column(
+                  children: [
+                    dluxList[i].isQueue
+                        ? const Icon(Icons.check)
+                        : const Icon(Icons.clear),
+                    const SizedBox(height: 5),
+                    const Text('Consensus?')
+                  ],
+                ),
+                const SizedBox(width: 5),
+                Column(
+                  children: [
+                    dluxList[i].isRunner
+                        ? const Icon(Icons.check)
+                        : const Icon(Icons.clear),
+                    const SizedBox(height: 5),
+                    const Text('Runner?')
+                  ],
+                )
+              ],
+            ),
+          );
         },
-        child: ListView.separated(
-          itemBuilder: (c, i) {
-            var result = (widget.title == 'Speak Nodes')
-                ? model.spkcc.contains(dluxList[i].name)
-                : model.dlux.contains(dluxList[i].name);
-            return ListTile(
-              tileColor: result ? Colors.grey : Colors.transparent,
-              title: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(dluxList[i].name),
-                      Text((dluxList[i].g / 1000.0).toStringAsFixed(3))
-                    ],
-                  ),
-                  const Spacer(),
-                  Column(
-                    children: [
-                      dluxList[i].isQueue
-                          ? const Icon(Icons.check)
-                          : const Icon(Icons.clear),
-                      const SizedBox(height: 5),
-                      const Text('Consensus?')
-                    ],
-                  ),
-                  const SizedBox(width: 5),
-                  Column(
-                    children: [
-                      dluxList[i].isRunner
-                          ? const Icon(Icons.check)
-                          : const Icon(Icons.clear),
-                      const SizedBox(height: 5),
-                      const Text('Runner?')
-                    ],
-                  )
-                ],
-              ),
-            );
-          },
-          separatorBuilder: (c, i) => const Divider(height: 0),
-          itemCount: dluxList.length,
-        ),
+        separatorBuilder: (c, i) => const Divider(height: 0),
+        itemCount: dluxList.length,
       ),
     );
   }
